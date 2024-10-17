@@ -1,0 +1,73 @@
+UVVM: ID_CONSTRUCTOR                     0.0 ns  GPIO_VVC,2                     VVC instantiated.
+UVVM: ID_CONSTRUCTOR_SUB                 0.0 ns  GPIO_VVC,2                     Command queue instantiated and will give a warning when reaching 1000 elements in queue.
+UVVM: ID_CONSTRUCTOR_SUB                 0.0 ns  GPIO_VVC,2                     Result queue instantiated and will give a warning when reaching 1000 elements in queue.
+UVVM: ID_CONSTRUCTOR                     0.0 ns  GPIO_VVC,1                     VVC instantiated.
+UVVM: ID_CONSTRUCTOR_SUB                 0.0 ns  GPIO_VVC,1                     Command queue instantiated and will give a warning when reaching 1000 elements in queue.
+UVVM: ID_CONSTRUCTOR_SUB                 0.0 ns  GPIO_VVC,1                     Result queue instantiated and will give a warning when reaching 1000 elements in queue.
+UVVM: ID_CONSTRUCTOR                     0.0 ns  CLOCK_GENERATOR_VVC,1          VVC instantiated.
+UVVM: ID_CONSTRUCTOR_SUB                 0.0 ns  CLOCK_GENERATOR_VVC,1          Command queue instantiated and will give a warning when reaching 1000 elements in queue.
+UVVM: ID_CONSTRUCTOR_SUB                 0.0 ns  CLOCK_GENERATOR_VVC,1          Result queue instantiated and will give a warning when reaching 1000 elements in queue.
+UVVM: ID_CMD_INTERPRETER_WAIT            0.0 ns  GPIO_VVC,2                       ..Interpreter: Waiting for command
+UVVM: ID_CMD_INTERPRETER_WAIT            0.0 ns  GPIO_VVC,1                       ..Interpreter: Waiting for command
+UVVM: ID_CMD_INTERPRETER_WAIT            0.0 ns  CLOCK_GENERATOR_VVC,1            ..Interpreter: Waiting for command
+UVVM: ID_CTRL                            0.0 ns  GPIO_VVC_SB,2                  enable() => SB enabled. 'GPIO VVC SB Enabled'
+UVVM: ID_CTRL                            0.0 ns  GPIO_VVC_SB,2                  config() => config applied to SB. 
+UVVM: ID_CTRL                            0.0 ns  GPIO_VVC_SB,2                  enable_log_msg() => message id id_data enabled.
+UVVM: ID_CTRL                            0.0 ns  GPIO_VVC_SB,1                  enable() => SB enabled. 'GPIO VVC SB Enabled'
+UVVM: ID_CTRL                            0.0 ns  GPIO_VVC_SB,1                  config() => config applied to SB. 
+UVVM: ID_CTRL                            0.0 ns  GPIO_VVC_SB,1                  enable_log_msg() => message id id_data enabled.
+UVVM: ID_CMD_EXECUTOR_WAIT               0.0 ns  CLOCK_GENERATOR_VVC,1            ..Executor: Waiting for command
+UVVM: 
+UVVM: 
+UVVM: =========================================================================================================================================================================
+UVVM: ID_LOG_HDR_LARGE                   0.0 ns  TB                             Starting simulations.
+UVVM: =========================================================================================================================================================================
+UVVM: 
+UVVM: 
+UVVM: ID_LOG_HDR                         0.0 ns  TB                             Set configuration
+UVVM: -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+UVVM: ID_CTRL                            0.0 ns  SB GPIO,1                      config() => config applied to SB. 'Set config for SB UART'
+UVVM: 
+UVVM: 
+UVVM: ID_LOG_HDR                         0.0 ns  TB                             Enable SBs
+UVVM: -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+UVVM: ID_CTRL                            0.0 ns  SB GPIO,1                      enable() => SB enabled. 
+UVVM: ID_CTRL                            0.0 ns  SB GPIO,1                      enable_log_msg() => message id id_data enabled. 
+UVVM: ID_UVVM_SEND_CMD                   0.0 ns  TB seq.(uvvm)                  ->start_clock(CLOCK_GENERATOR_VVC,1): 'Start Clock Generator'. [1]
+UVVM: ID_CMD_EXECUTOR_WAIT               0.0 ns  GPIO_VVC,2                       ..Executor: Waiting for command
+UVVM: ID_CMD_EXECUTOR_WAIT               0.0 ns  GPIO_VVC,1                       ..Executor: Waiting for command
+UVVM: ID_CMD_INTERPRETER                 0.0 ns  CLOCK_GENERATOR_VVC,1            start_clock(CLOCK_GENERATOR_VVC,1). Command received  [1]
+UVVM: ID_UVVM_CMD_ACK                    0.0 ns  TB seq.(uvvm)                      ACK received.   [1]
+UVVM: ID_CMD_EXECUTOR                    0.0 ns  CLOCK_GENERATOR_VVC,1            start_clock(CLOCK_GENERATOR_VVC,1) - Will be executed  [1]
+UVVM: ID_CMD_INTERPRETER_WAIT            0.0 ns  CLOCK_GENERATOR_VVC,1            ..Interpreter: Waiting for command
+UVVM: ID_CLOCK_GEN                       0.0 ns  CLOCK_GENERATOR_VVC,1          Clock 'clk' started
+UVVM: ID_CMD_EXECUTOR_WAIT               0.0 ns  CLOCK_GENERATOR_VVC,1            ..Executor: Waiting for command
+UVVM: ID_UVVM_SEND_CMD                  90.0 ns  TB                             ->gpio_set(GPIO_VVC,1, , x"1"): 'SET the GPIO input to a 1'. [2]
+UVVM: ID_CMD_INTERPRETER                90.0 ns  GPIO_VVC,1                       gpio_set(GPIO_VVC,1, , x"1"). Command received  [2]
+UVVM: ID_UVVM_CMD_ACK                   90.0 ns  TB                                 ACK received.   [2]
+UVVM: ID_CMD_EXECUTOR                   90.0 ns  GPIO_VVC,1                       gpio_set(GPIO_VVC,1, , x"1") - Will be executed  [2]
+UVVM: ID_AWAIT_COMPLETION_LIST          90.0 ns  TB seq.(uvvm)                  Adding: GPIO_VVC,1 to the list.
+UVVM: ID_AWAIT_COMPLETION               90.0 ns  TB seq.(uvvm)                  await_completion(all_of,(GPIO_VVC,1),1000 ns): 'Wait for the GPIO VVC to set input value to 1'.
+UVVM:                                                                           [3]
+UVVM: ID_AWAIT_COMPLETION_WAIT          90.0 ns  TB seq.(uvvm)                  ..await_completion(all_of,(GPIO_VVC,1),1000 ns) - Pending completion. 'Wait for the GPIO VVC to
+UVVM:                                                                             set input value to 1' [3]
+UVVM: ID_CMD_INTERPRETER_WAIT           90.0 ns  GPIO_VVC,1                       ..Interpreter: Waiting for command
+UVVM: ID_BFM                            90.0 ns  GPIO_VVC,1                     gpio_set(1) completed. 'SET the GPIO input to a 1'  [2]
+UVVM: ID_AWAIT_COMPLETION_END           90.0 ns  TB seq.(uvvm)                    await_completion(all_of,(GPIO_VVC,1),1000 ns)=> GPIO_VVC,1 finished. 'Wait for the GPIO VVC
+UVVM:                                                                             to set input value to 1' [3]
+UVVM: ID_AWAIT_COMPLETION_LIST          90.0 ns  TB seq.(uvvm)                  await_completion(all_of,(GPIO_VVC,1),1000 ns)=> All VVCs removed from the list. 'Wait for the
+UVVM:                                                                           GPIO VVC to set input value to 1' [3]
+UVVM: ID_CMD_EXECUTOR_WAIT              90.0 ns  GPIO_VVC,1                       ..Executor: Waiting for command
+UVVM: ID_DATA                          190.0 ns  SB GPIO,1                      add_expected() => expected: x"1". 
+UVVM: ID_BFM                           190.0 ns  GPIO BFM                       gpio_get() => Read gpio value: x"1". 'Get the GPIO I/O BFM data'
+UVVM: ID_DATA                          190.0 ns  SB GPIO,1                      check_received() => MATCH, for received: x"1". 
+UVVM: ID_POS_ACK                       190.0 ns  TB seq.                        check_value() => OK, for boolean true. 'Check that scoreboard is empty'
+UVVM:      
+UVVM:      ====================================================================================================================================================================
+UVVM:      190 ns *** SCOREBOARD COUNTERS SUMMARY: SB GPIO ***                                                                                                                 
+UVVM:      ====================================================================================================================================================================
+UVVM:                       ENTERED         PENDING          MATCH         MISMATCH          DROP          INITIAL_GARBAGE         DELETE         OVERDUE_CHECK                
+UVVM:      instance:   1       1               0               1               0               0                  0                   0                 0                      
+UVVM:      ====================================================================================================================================================================
+UVVM:      
+UVVM:      

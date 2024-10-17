@@ -1,0 +1,229 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+library uvvm_util;
+context uvvm_util.uvvm_util_context;
+
+package local_pkg is
+    function slv_to_string(
+      constant value : in std_logic_vector
+    ) return string;
+end package local_pkg;
+  
+package body local_pkg is
+    function slv_to_string(
+      constant value : in std_logic_vector
+    ) return string is
+    begin
+      return to_string(value, HEX, KEEP_LEADING_0, INCL_RADIX);
+    end function;
+end package body local_pkg;
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+library uvvm_util;
+context uvvm_util.uvvm_util_context;
+library bitvis_vip_scoreboard;
+
+use work.local_pkg.all;
+
+package slv1024_sb_pkg is new bitvis_vip_scoreboard.generic_sb_pkg
+    generic map(t_element         => std_logic_vector(1023 downto 0),
+                element_match     => std_match,
+                to_string_element => slv_to_string);
+----
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+library uvvm_util;
+context uvvm_util.uvvm_util_context;
+library bitvis_vip_scoreboard;
+
+use work.local_pkg.all;
+
+package slv1_sb_pkg is new bitvis_vip_scoreboard.generic_sb_pkg
+    generic map(t_element         => std_logic_vector(0 downto 0),
+                element_match     => std_match,
+                to_string_element => slv_to_string);
+
+library ieee;
+    use ieee.std_logic_1164.all;
+    use ieee.numeric_std.all;
+library uvvm_util;
+    context uvvm_util.uvvm_util_context;
+library uvvm_vvc_framework;
+    use uvvm_vvc_framework.ti_vvc_framework_support_pkg.all;
+library bitvis_vip_sbi;
+    context bitvis_vip_sbi.vvc_context;
+library bitvis_vip_clock_generator;
+    context bitvis_vip_clock_generator.vvc_context;
+library bitvis_vip_gpio;
+    context bitvis_vip_gpio.vvc_context; 
+library bitvis_vip_scoreboard;
+    use bitvis_vip_scoreboard.slv8_sb_pkg.all;
+    use bitvis_vip_scoreboard.slv_sb_pkg.all;
+    use bitvis_vip_scoreboard.generic_sb_support_pkg.all;
+
+use work.slv1024_sb_pkg.all;
+use work.slv1_sb_pkg.all;
+
+entity uvvm_tb is
+end entity uvvm_tb;
+
+architecture func of uvvm_tb is
+
+    constant C_SCOPE    : string  := "TB";
+
+    signal t_rst        : std_logic := '0';
+    signal t_clk        : std_logic;
+    signal t_dut_input  : std_logic_vector(7 downto 0) := (others => '0');
+    signal t_dut_output : std_logic_vector(7 downto 0) := (others => '0');
+    signal t_out        : std_logic_vector(0 downto 0) := (others => '0');
+
+    shared variable v_gpio_sb : bitvis_vip_scoreboard.slv1_sb_pkg.t_generic_sb;
+
+begin
+
+    clk_gen : entity bitvis_vip_clock_generator.clock_generator_vvc(behave)
+        generic map
+        (
+            GC_INSTANCE_IDX                           => 1,     -- : natural       := 1;
+            GC_CLOCK_NAME                             => "clk"  -- : string        := "clk";
+        -- Turbohack : Use defaults
+        --     GC_CLOCK_PERIOD                          : time          := 10 ns;
+        --     GC_CLOCK_HIGH_TIME                       : time          := 5 ns;
+        --     GC_CMD_QUEUE_COUNT_MAX                   : natural       := C_CMD_QUEUE_COUNT_MAX;
+        --     GC_CMD_QUEUE_COUNT_THRESHOLD             : natural       := C_CMD_QUEUE_COUNT_THRESHOLD;
+        --     GC_CMD_QUEUE_COUNT_THRESHOLD_SEVERITY    : t_alert_level := C_CMD_QUEUE_COUNT_THRESHOLD_SEVERITY;
+        --     GC_RESULT_QUEUE_COUNT_MAX                : natural       := C_RESULT_QUEUE_COUNT_MAX;
+        --     GC_RESULT_QUEUE_COUNT_THRESHOLD          : natural       := C_RESULT_QUEUE_COUNT_THRESHOLD;
+        --     GC_RESULT_QUEUE_COUNT_THRESHOLD_SEVERITY : t_alert_level := C_RESULT_QUEUE_COUNT_THRESHOLD_SEVERITY
+        )
+        port map
+        (
+            clk => t_clk  -- : out std_logic
+        );
+
+    gpio_input : entity bitvis_vip_gpio.gpio_vvc(behave)
+        generic map
+        (
+            GC_DATA_WIDTH                            =>  1,   -- : natural range 1 to C_VVC_CMD_DATA_MAX_LENGTH;
+            GC_INSTANCE_IDX                          =>  1,   -- : natural;
+            GC_DEFAULT_LINE_VALUE                    => "0"   -- : std_logic_vector(GC_DATA_WIDTH - 1 downto 0);
+            -- Turbohack : Use defaults for all these because I don't know what they do
+            -- GC_GPIO_BFM_CONFIG                       : t_gpio_bfm_config := C_GPIO_BFM_CONFIG_DEFAULT;
+            -- GC_CMD_QUEUE_COUNT_MAX                   : natural           := C_CMD_QUEUE_COUNT_MAX;
+            -- GC_CMD_QUEUE_COUNT_THRESHOLD             : natural           := C_CMD_QUEUE_COUNT_THRESHOLD;
+            -- GC_CMD_QUEUE_COUNT_THRESHOLD_SEVERITY    : t_alert_level     := C_CMD_QUEUE_COUNT_THRESHOLD_SEVERITY;
+            -- GC_RESULT_QUEUE_COUNT_MAX                : natural           := C_RESULT_QUEUE_COUNT_MAX;
+            -- GC_RESULT_QUEUE_COUNT_THRESHOLD          : natural           := C_RESULT_QUEUE_COUNT_THRESHOLD;
+            -- GC_RESULT_QUEUE_COUNT_THRESHOLD_SEVERITY : t_alert_level     := C_RESULT_QUEUE_COUNT_THRESHOLD_SEVERITY
+        )
+        port map
+        (
+            gpio_vvc_if => t_dut_input(0 downto 0)  -- : inout std_logic_vector(GC_DATA_WIDTH - 1 downto 0) := GC_DEFAULT_LINE_VALUE
+        );
+
+    gpio_output : entity bitvis_vip_gpio.gpio_vvc(behave)
+        generic map
+        (
+            GC_DATA_WIDTH                            =>  1,   -- : natural range 1 to C_VVC_CMD_DATA_MAX_LENGTH;
+            GC_INSTANCE_IDX                          =>  2,   -- : natural;
+
+            -- Turbohack : Set to "Z" to set it as an input.
+            GC_DEFAULT_LINE_VALUE                    => "Z"   -- : std_logic_vector(GC_DATA_WIDTH - 1 downto 0);
+
+            -- Turbohack : Use defaults for all these because I don't know what they do.
+            -- GC_GPIO_BFM_CONFIG                       : t_gpio_bfm_config := C_GPIO_BFM_CONFIG_DEFAULT;
+            -- GC_CMD_QUEUE_COUNT_MAX                   : natural           := C_CMD_QUEUE_COUNT_MAX;
+            -- GC_CMD_QUEUE_COUNT_THRESHOLD             : natural           := C_CMD_QUEUE_COUNT_THRESHOLD;
+            -- GC_CMD_QUEUE_COUNT_THRESHOLD_SEVERITY    : t_alert_level     := C_CMD_QUEUE_COUNT_THRESHOLD_SEVERITY;
+            -- GC_RESULT_QUEUE_COUNT_MAX                : natural           := C_RESULT_QUEUE_COUNT_MAX;
+            -- GC_RESULT_QUEUE_COUNT_THRESHOLD          : natural           := C_RESULT_QUEUE_COUNT_THRESHOLD;
+            -- GC_RESULT_QUEUE_COUNT_THRESHOLD_SEVERITY : t_alert_level     := C_RESULT_QUEUE_COUNT_THRESHOLD_SEVERITY
+        )
+        port map
+        (
+            gpio_vvc_if => t_dut_output(0 downto 0)  -- : inout std_logic_vector(GC_DATA_WIDTH - 1 downto 0) := GC_DEFAULT_LINE_VALUE
+        );
+
+    dut : entity work.my_dut(rtl)
+        port map
+        (
+            i_clk => t_clk,           -- : in    std_logic;
+            i_rst => t_rst,           -- : in    std_logic;
+            i_val => t_dut_input(0),  -- : in    std_logic;
+            o_val => t_dut_output(0)  -- :   out std_logic
+        );
+
+    --------------------------------------------------------------
+    -- Have to initialize the UVVM.
+    --------------------------------------------------------------
+    uvvm_engine : entity uvvm_vvc_framework.ti_uvvm_engine(func);
+
+    p_main : process
+        variable v_cmd_idx : integer; -- natural;
+        --variable v_data    : std_logic_vector(1023 downto 0);
+        variable v_data    : std_logic_vector(0 downto 0);
+    begin
+        -----------------------------------------------------------------
+        -- Wait for UVVM initialization complete(If this is not called 
+        --  then we will receive the failed to obtain semaphore error).
+        -----------------------------------------------------------------
+        await_uvvm_initialization(VOID);
+
+        log(ID_LOG_HDR_LARGE, "Starting simulations.", C_SCOPE);
+
+        v_gpio_sb.set_scope("SB GPIO");
+        log(ID_LOG_HDR, "Set configuration", C_SCOPE);
+        v_gpio_sb.config(C_SB_CONFIG_DEFAULT, "Set config for SB UART");
+
+        log(ID_LOG_HDR, "Enable SBs", C_SCOPE);
+        v_gpio_sb.enable(VOID);
+
+        -- Enable log msg for data
+        v_gpio_sb.enable_log_msg(ID_DATA);
+
+        start_clock(CLOCK_GENERATOR_VVCT, 1, "Start Clock Generator");
+
+        for i in 1 to 10 loop
+            wait until rising_edge(t_clk);
+        end loop;
+
+        -- v_data := (0 => '1', others => '0');
+        v_data := (0 => '1');
+        --gpio_set(GPIO_VVCT, 1, "1", "SET the GPIO input to a 1", C_SCOPE);
+        gpio_set(GPIO_VVCT, 1, v_data, "SET the GPIO input to a 1", C_SCOPE); -- VCC set
+        v_gpio_sb.add_expected(v_data); -- Set Expected Value
+
+        for i in 1 to 10 loop
+            wait until rising_edge(t_clk);
+        end loop;
+
+        gpio_get(data_value => v_data, 
+                 data_port  => t_dut_output,
+                 msg        => "Get the GPIO I/O BFM data"); -- BFM get, just need the v_data value and scoreboard it.
+
+        --gpio_check(GPIO_VVCT, 2, "1", "CHECK that GPIO outputs a 1"); -- This works. Issue is with the scoreboard.
+        --gpio_get(GPIO_VVCT, 2, "Read GPIO Data");
+        --v_cmd_idx := get_last_received_cmd_idx(GPIO_VVCT, 2);
+        --await_completion(GPIO_VVCT, 2, v_cmd_idx, 1 us, "Wait for receive to finish");
+        --fetch_result(GPIO_VVCT, 2, v_cmd_idx, v_data, "Fetching result from receive operation");
+        v_gpio_sb.check_received(v_data); -- Verify Expected to Actual Value
+
+
+        --stop_clock(CLOCK_GENERATOR_VVCT, 1, "Stop Clock Generator");
+        for i in 1 to 10 loop
+            wait until rising_edge(t_clk);
+        end loop;
+
+        std.env.stop;
+        wait;
+    end process p_main;
+
+end func;
+
