@@ -1,3 +1,4 @@
 1. Make the upper level UVVM folder a git folder in my git.
 2. Make the lower level UVVM a submodule so I can separately update it.
+	https://github.com/UVVM/UVVM.git
 3. This way I can put all my additions into git and maintain all my verification activities.
